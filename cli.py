@@ -45,6 +45,8 @@ def main(args: argparse.Namespace) -> None:
                 level = os.environ.get("PY_LOG", "WARNING").upper()
                 )
 
+    _logger.error("APPLICATION IS NOT COMPLETE")
+
 
 def instructions() -> None:
     print("ENVIRONMENT VARIABLES")
