@@ -7,7 +7,30 @@ This tool is written in Python and is modeled after the
 [mwoffliner](https://github.com/openzim/mwoffliner) tool for general
 MediaWiki capture.
 
-## Why a separte tool?
+## Installation
+Copy the Git repository:
+```
+git clone https://github.com/fspreen/starbounder_offliner
+cd starbounder_offliner
+```
+
+Create a Python virtual environment:
+```
+virtualenv -p python3 venv
+```
+
+Activate the virtual environment and install dependencies:
+```
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Run the software:
+```
+python cli.py --adminEmail YOUR_EMAIL
+```
+
+## Why a separate tool?
 The [mwoffliner](https://github.com/openzim/mwoffliner) tool is good for
 creating offline copies of wikis built on MediaWiki software.  But it
 only supports MediaWiki version 1.27 or newer.  The Starbounder wiki
