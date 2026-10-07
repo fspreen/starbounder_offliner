@@ -33,7 +33,7 @@ class SiteInfoResponse(NamedTuple):
     warnings: Optional[dict[str, dict[str, str]]]
 
     @classmethod
-    def from_json_str(cls, d: dict[str, Any]) -> SiteInfoResponse:
+    def from_json(cls, d: dict[str, Any]) -> SiteInfoResponse:
         batchcomplete: bool = d['batchcomplete']
         query = SiteInfoQueryResponse.from_json(d['query'])
         warnings = d.get('warnings', None)
