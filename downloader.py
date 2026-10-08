@@ -61,6 +61,27 @@ class Downloader:
 
         return response
 
+    def checkApiAvailability(self, url: str, allowedMimeTypes: Optional[list[str]] = None) -> bool:
+        try:
+            resp = self._get(url)
+            isSuccess = resp.status_code == 200 and ('mediawiki-api-error' not in resp.headers or resp.headers['mediawiki-api-error'] == "rest-permission-error")
+
+            validMimeType = False
+            if not allowedMimeTypes:
+                validMimeType = True
+            else:
+                for mimeType in allowedMimeTypes:
+                    if mimeType in resp.headers.get('content-type', ""):
+                        validMimeType = True
+                        break
+
+            return isSuccess and validMimeType
+
+        except requests.RequestException as xc:
+            # TODO better exception info?
+            _logger.debug("checkApiAvailability failed: URL=%s :: %s", url, xc)
+            return False
+
     # Performs several retries that back off in exponential time delays, up to a
     # maximum count.  Delay values in seconds.
     def get_json(self, url: str, max_tries: int=10, min_delay: int=1, max_delay: int=60) -> Any:
