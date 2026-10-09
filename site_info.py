@@ -136,13 +136,19 @@ class Namespace(NamedTuple):
 class NamespaceAlias(NamedTuple):
     ident: int
     alias: str
+    canonical: Optional[str]
+    content: Optional[bool]
+    subpages: Optional[bool]
 
     @classmethod
     def from_json(cls, d: dict[str, Any]) -> NamespaceAlias:
         ident = d['id']
         alias = d['alias']
+        canonical = d.get('canonical', None)
+        content = d.get('content', None)
+        subpages = d.get('subpages', None)
 
-        return cls(ident, alias)
+        return cls(ident, alias, canonical, content, subpages)
 
 
 class RightsInfo(NamedTuple):
