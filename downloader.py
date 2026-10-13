@@ -46,9 +46,11 @@ class Downloader:
 
     # email address for user-agent string
     def __init__(self, email: str) -> None:
+        ua = f"{_USER_AGENT} ({email})"
         self._headers: dict[str, str] = {
-                'User-Agent': f"{_USER_AGENT} ({email})",
+                'User-Agent': ua,
                 }
+        _logger.info("Using User-Agent: %s", ua)
 
     def _get(self, url: str) -> Response:
         _logger.debug("GET: %s", url)
