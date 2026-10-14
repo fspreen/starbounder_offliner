@@ -29,8 +29,6 @@ import requests
 
 from  requests import Response
 
-from tmp_headers import HEADERS as HEADERS
-
 _logger = logging.getLogger(__name__)
 
 _TIMEOUT_SECONDS = 10
