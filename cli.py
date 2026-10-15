@@ -25,6 +25,8 @@ import argparse
 import logging
 import os
 
+import offliner
+
 _logger = logging.getLogger(__name__)
 
 def main(args: argparse.Namespace) -> None:
@@ -45,7 +47,7 @@ def main(args: argparse.Namespace) -> None:
                 level = os.environ.get("PY_LOG", "WARNING").upper()
                 )
 
-    _logger.error("APPLICATION IS NOT COMPLETE")
+    offliner.main(args)
 
 
 def instructions() -> None:
@@ -61,6 +63,15 @@ if __name__ == "__main__":
     arg_parser.add_argument("--adminEmail", required=True, help="Email of the StarbounderOffliner operator. Will be put in the HTTP user-agent string for information only")
     arg_parser.add_argument("--pageList", help="List of pages to include.  Comma separated list of titles or a local path or HTTP(S) URL to a file with one title (in UTF8) per line")
     arg_parser.add_argument("--getCategories", action='store_true', help="Include the categories of all included pages.")
+    arg_parser.add_argument("--categoriesPageSize", help="Number of items (subcategories, pages, files) to display per page on category pages (default: 200)")
+    arg_parser.add_argument("--mwModulePath", help="MediaWiki module load path ($wgLoadScript), automatically chosen based on script path otherwise.")
+    arg_parser.add_argument("--javaScript", help='Amount of JavaScript being allowed in pages, one of the following values can be given: "none", "trusted" or "all" (default being "trusted").')
+    arg_parser.add_argument("--addNamespaces", help="Force additional namespace (comma separated numbers)")
+    arg_parser.add_argument("--onlyNamespaces", help="Include only pages of provided namespaces (comma separated numbers)")
+    arg_parser.add_argument("--addModules", help="Add additional ResourceLoader modules for dynamic loading (comma separated list)")
+    arg_parser.add_argument("--forceSkin", help="Force the usage of a skin (must be available on wiki), default skin automatically chosen otherwise")
+    # TODO update help string with version info
+    arg_parser.add_argument("--userAgent", help='Custom User-Agent header for all HTTP requests. Defaults to "StarbounderOffliner (<adminEmail>)"')
     args = arg_parser.parse_args()
 
     main(args)
