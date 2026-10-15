@@ -33,22 +33,17 @@ _logger = logging.getLogger(__name__)
 
 _TIMEOUT_SECONDS = 10
 
-# TODO set config opt
-# TODO incorporate version?
-_USER_AGENT = "StarbounderOffliner"
-
 # TODO turn this all into async or something
 
 class Downloader:
     __slots__ = ("_headers", )
 
     # email address for user-agent string
-    def __init__(self, email: str) -> None:
-        ua = f"{_USER_AGENT} ({email})"
+    def __init__(self, user_agent: str) -> None:
         self._headers: dict[str, str] = {
-                'User-Agent': ua,
+                'User-Agent': user_agent,
                 }
-        _logger.info("Using User-Agent: %s", ua)
+        _logger.info("Using User-Agent: %s", user_agent)
 
     def _get(self, url: str) -> Response:
         _logger.debug("GET: %s", url)
