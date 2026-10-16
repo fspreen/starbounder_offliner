@@ -76,7 +76,7 @@ class SiteInfoGeneral(NamedTuple):
     articlepath: str
     script: str
     scriptpath: str
-    fallback: list[Any]                 # TODO
+    fallback: list[LangFallback]
     variants: Optional[list[Any]]       # TODO
     #categorycollation: str              # TODO remove?
 
@@ -92,7 +92,7 @@ class SiteInfoGeneral(NamedTuple):
         articlepath = d['articlepath']
         script = d['script']
         scriptpath = d['scriptpath']
-        fallback = d['fallback']
+        fallback = [LangFallback.from_json(j) for j in d['fallback']]
         variants = d.get('variants', None)
         #categorycollation = d['categorycollation']             # missing from Starbounder
 
@@ -190,3 +190,13 @@ class Message(NamedTuple):
         content = d['content']
 
         return cls(name, normalizedname, content)
+
+
+class LangFallback(NamedTuple):
+    code: str
+
+    @classmethod
+    def from_json(cls, d: dict[str, str]) -> LangFallback:
+        code = d['code']
+
+        return cls(code)
