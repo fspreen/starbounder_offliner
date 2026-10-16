@@ -27,6 +27,8 @@ import re
 from typing import NamedTuple, Optional
 from urllib.parse import urlsplit
 
+import iso639
+
 from action_parse_director import ActionParseUrlDirector
 from api_director import APIUrlDirector
 # temporary arrangement
@@ -128,7 +130,7 @@ class MediaWiki:
 
         self.namespaces = {}
         self.namespacesToMirror = []
-        self.apiCheckPageTitle = "MediaWiki:Sidebar"    # "as PageTitle" which is just a readonly string?
+        self.apiCheckPageTitle = "MediaWiki:Sidebar"    # "as PageTitle" which is just a string?
 
         self.queryOpts = QueryOpts(
                 action = "query",
@@ -305,7 +307,8 @@ class MediaWiki:
             raise ValueError("This wiki has no default skin: " + str(skins))
 
         if len(default_skins) > 1:
-            _logger.warn("Multiple default skins found, defaulting to the first one (%s)", default_skins[0])
+            _logger.warn("Multiple default skins found, defaulting to the first one (%s)",
+                         default_skins[0])
 
         return default_skins[0]
 
@@ -316,21 +319,7 @@ class MediaWiki:
                     mwModulePath: Optional[str] = None,
                     forceSkin: Optional[str] = None,
                     langVariants: Optional[list[str]] = None
-                    ) -> tuple[
-                            str,
-                            #bool,
-                            str,
-                            TextDirection,
-                            str,
-                            #str,
-                            #str,
-                            str,
-                            str,
-                            str,
-                            str,
-                            #str,
-                            str
-                            ]:
+                    ) -> _BasicSiteInfo:
         _logger.info("Getting site info...")
 
         # Downloader.querySiteInfo()
@@ -360,10 +349,18 @@ class MediaWiki:
         logo = generalEntries.logo
         langMw = generalEntries.lang
         textDir = TextDirection.RTL if generalEntries.rtl else TextDirection.LTR
-        _logger.info("Text direction is %s", textDir)
+        _logger.info("Text direction is %s", textDir.as_str().upper())
 
-        langs = [re.sub("-.*", "", s) for s in generalEntries.fallback]
-        # TODO langIso2 and langIso3 (NOTE:  can't find any examples of this data)
+        # default to English
+        langIso2, langIso3 = ("en", "eng")
+        langs = [langMw] + [f.code for f in generalEntries.fallback]
+        langs = [re.sub(".*", "", s) for s in langs]
+        isos = ((lang, get_iso639_3(lang)) for lang in langs)
+        try:
+            (langIso2, langIso3) = next((p for p in isos if p[1]))
+        except StopIteration:
+            # stick with defaults
+            pass
 
         articlepath = generalEntries.articlepath
         if '?' in articlepath or not articlepath.endswith("$1"):
@@ -371,7 +368,8 @@ class MediaWiki:
 
         self._wikiPath = articlepath.replace("$1", "")
         self._indexPhpPath = generalEntries.script
-        self._modulePathOpt = mwModulePath if mwModulePath else generalEntries.scriptpath + "/load.php"
+        self._modulePathOpt = mwModulePath if mwModulePath else \
+                generalEntries.scriptpath + "/load.php"
 
         skins = [sk for sk in body.query.skins if not sk.unusable]
         if forceSkin and forceSkin not in [sk.code for sk in skins]:
@@ -382,16 +380,17 @@ class MediaWiki:
             validLangVars = generalEntries.variants if generalEntries.variants else []
             invalidLangVars = [v for v in langVariants if v not in validLangVars]
             if invalidLangVars:
-                raise ValueError(f"Language variants {invalidLangVars} are not available on the wiki")
+                raise ValueError(
+                        f"Language variants {invalidLangVars} are not available on the wiki")
 
-        return (
+        return _BasicSiteInfo(
                 mainPage,
                 #mainPageIsDomainRoot,
                 siteName,
                 textDir,
                 langMw,
-                #langIso2,
-                #langIso3,
+                langIso2,
+                langIso3,
                 logo,
                 licenseName,
                 licenseUrl,
@@ -413,36 +412,23 @@ class MediaWiki:
 
         creator = self.getCreatorName() or "Kiwix"
 
-        (
-                mainPage,
-                #mainPageIsDomainRoot,
-                siteName,
-                textDir,
-                langMw,
-                #langIso2,
-                #langIso3,
-                logo,
-                licenseName,
-                licenseUrl,
-                subTitle,
-                #categoryCollation,
-                mwVersion
-                ) = self.getSiteInfo(addNamespaces, onlyNamespaces, mwModulePath, forceSkin, langVariants)
+        basic_site_info = self.getSiteInfo(
+                addNamespaces, onlyNamespaces, mwModulePath, forceSkin, langVariants)
 
         metadata = MWMetaData(
-                #langIso2,
-                #langIso3,
-                siteName,
-                subTitle,
+                basic_site_info.langIso2,
+                basic_site_info.langIso3,
+                basic_site_info.siteName,
+                basic_site_info.subTitle,
                 creator,
-                mainPage,
+                basic_site_info.mainPage,
                 #mainPageIsDomainRoot: bool
-                textDir,
-                langMw,
-                mwVersion,
-                logo,
-                licenseName,
-                licenseUrl,
+                basic_site_info.textDir,
+                basic_site_info.langMw,
+                basic_site_info.mwVersion,
+                basic_site_info.logo,
+                basic_site_info.licenseName,
+                basic_site_info.licenseUrl,
                 #categoryCollation: str
 
                 self.baseUrl,
@@ -481,8 +467,8 @@ class MWNamespaceData(NamedTuple):
 
 
 class MWMetaData(NamedTuple):
-    #langIso2: str                   # unused by Starbounder (can't find docs?)
-    #langIso3: str
+    langIso2: str
+    langIso3: str
     title: str
     subTitle: str
     creator: str
@@ -518,3 +504,28 @@ class TextDirection(enum.Enum):
         elif self == TextDirection.RTL:
             return "rtl"
         return self.name
+
+
+class _BasicSiteInfo(NamedTuple):
+    mainPage: str
+    #mainPageIsDomainRoot: bool
+    siteName: str
+    textDir: TextDirection
+    langMw: str
+    langIso2: str
+    langIso3: str
+    logo: str
+    licenseName: str
+    licenseUrl: str
+    subTitle: str
+    #categoryCollation: str
+    mwVersion: str
+
+
+def get_iso639_3(lang: str) -> str:
+    ret = ""
+    try:
+        ret = iso639.Lang(lang).pt3
+    except iso639.exceptions.DeprecatedLanguageValue, iso639.exceptions.InvalidLanguageValue:
+        pass
+    return ret
