@@ -208,7 +208,8 @@ class MediaWiki:
         elif value:
             _logger.error("Base url detector should be specifiedd first")
 
-    async def hasActionParseApi(self) -> bool:
+    # TODO make this async
+    def hasActionParseApi(self) -> bool:
         if self._hasActionParseApi is None:
             self.actionParseUrlDirector = ActionParseUrlDirector(self.actionApiUrl, self.skin)
             checkUrl = self.actionParseUrlDirector.buildPageUrl(self.apiCheckPageTitle)
@@ -222,7 +223,8 @@ class MediaWiki:
 
     # TODO hasCoordinates
 
-    async def hasModuleApi(self) -> bool:
+    # TODO make this async
+    def hasModuleApi(self) -> bool:
         if self._hasModuleApi is None:
             checkURL = f"{self.modulePath}lang=en&modules=startup&only=scripts"
             # TODO await checkApiAvailability() if it ever goes async
