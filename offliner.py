@@ -22,24 +22,27 @@
 #####
 
 import argparse
+import datetime as dt
 import logging
-from pprint import pprint
+from typing import NamedTuple
 
-import api_director
 import downloader
 from mediawiki import MediaWiki
 from site_info import SiteInfoResponse
 
 _logger = logging.getLogger(__name__)
 
-# TODO set config opt
+# TODO set config opt?
 # TODO incorporate version?
 _USER_AGENT = "StarbounderOffliner"
+_PUBLISHER = "openZIM"
 
 def main(args: argparse.Namespace) -> None:
     # In mwoffliner, these are CLI parameters.
     mwUrl = "https://starbounder.org"
     mwActionApiPath = "/mediawiki/api.php"
+
+    publisher = args.publisher or _PUBLISHER
 
     # TODO add version info
     _logger.info("Starting Starbound offliner...")
@@ -91,7 +94,36 @@ def main(args: argparse.Namespace) -> None:
         _logger.error("FATAL - failed to get MediaWiki metadata")
         raise xc
 
-    # TODO continue past this
-    _logger.info("Creator: %s", mwMetaData.creator)
+    metaDataRequiredKeys = RequiredMetadata(
+            creator = mwMetaData.creator,
+            description = args.customZimDescription or mwMetaData.subTitle,
+            language = args.customZimLanguage or mwMetaData.langIso3,
+            publisher = publisher,
+            title = args.customZimTitle or mwMetaData.title,
+            date = dt.date.today().isoformat()
+            # TODO illustration
+            )
+
+    # TODO validateMetadata() (mwoffliner/src/util/metaData.ts)
+
+    mainPage = "" if args.pageList else mwMetaData.mainPage
+    if args.customMainPage:
+        main_page = args.customMainPage.replace('_', ' ')
+
+    mediawiki.apiCheckPageTitle = mwMetaData.mainPage
+    # TODO await these three calls if they ever go async
+    # TODO await mediawiki.hasCoordinates()
+    mediawiki.hasActionParseApi()
+    mediawiki.hasModuleApi()
 
     _logger.error("APPLICATION IS NOT COMPLETE")
+
+
+class RequiredMetadata(NamedTuple):
+    creator: str
+    description: str
+    language: str
+    publisher: str
+    title: str
+    date: str
+    #illustration: str
