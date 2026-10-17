@@ -235,7 +235,37 @@ class MediaWiki:
 
         return self._hasModuleApi
 
-    # TODO hasFlaggedRevs
+    # TODO make this async
+    def hasFlaggedRevs(self) -> bool:
+        if self._hasFlaggedRevs is None:
+            reqOpts = [
+                    ("action",          str(self.queryOpts.action)),
+                    ("qformat",         str(self.queryOpts.qformat)),
+                    ("prop",            "info|flagged"),
+                    ("rdlimit",         str(self.queryOpts.rdlimit)),
+                    ("rdprop",          str(self.queryOpts.rdprop)),
+                    ("ppprop",          str(self.queryOpts.ppprop)),
+                    ("clprop",          str(self.queryOpts.clprop)),
+                    ("cllimit",         str(self.queryOpts.cllimit)),
+                    ("redirects",       str(self.queryOpts.redirects)),
+                    ("formatversion",   str(self.queryOpts.formatversion)),
+                    ("maxlag",          str(self.queryOpts.maxlag)),
+                    ("titles",          str(self.apiCheckPageTitle))]
+
+            if self._apiUrlDirector:
+                resp = self.downloader.get_json(self._apiUrlDirector.buildQueryURL(reqOpts))
+                isFlaggedWarning = "flagged" in resp.get('warnings', {}).get('query', {})
+                if isFlaggedWarning:
+                    _logger.info("FlaggedRevs not available on this wiki")
+                    self._hasFlaggedRevs = False
+                else:
+                    _logger.info("FlaggedRevs available on this wiki")
+                    self._hasFlaggedRevs = True
+            else:
+                # TODO better default?  (Shouldn't be executing if _apiUrlDirector is empty anyway)
+                self._hasFlaggedRevs = False
+
+        return self._hasFlaggedRevs
 
     def setModuleURL(self) -> None:
         if self.urlDirector:
