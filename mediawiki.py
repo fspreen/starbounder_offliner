@@ -206,7 +206,7 @@ class MediaWiki:
         if self.urlDirector:
             self.setModuleURL()
         elif value:
-            _logger.error("Base url detector should be specifiedd first")
+            _logger.error("Base url detector should be specified first")
 
     # TODO make this async
     def hasActionParseApi(self) -> bool:
@@ -226,7 +226,7 @@ class MediaWiki:
     # TODO make this async
     def hasModuleApi(self) -> bool:
         if self._hasModuleApi is None:
-            checkURL = f"{self.modulePath}lang=en&modules=startup&only=scripts"
+            checkURL = f"{self.modulePath}?lang=en&modules=startup&only=scripts"
             # TODO await checkApiAvailability() if it ever goes async
             self._hasModuleApi = self.downloader.checkApiAvailability(checkURL)
             _logger.info("Checked for Module API at %s -- result is: %s",
