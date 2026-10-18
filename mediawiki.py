@@ -400,8 +400,8 @@ class MediaWiki:
 
         self._wikiPath = articlepath.replace("$1", "")
         self._indexPhpPath = generalEntries.script
-        self._modulePathOpt = mwModulePath if mwModulePath else \
-                generalEntries.scriptpath + "/load.php"
+        self.set_modulePathOpt(mwModulePath if mwModulePath else \
+                generalEntries.scriptpath + "/load.php")
 
         skins = [sk for sk in body.query.skins if not sk.unusable]
         if forceSkin and forceSkin not in [sk.code for sk in skins]:
