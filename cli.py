@@ -61,7 +61,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
     # taken from parameterList.ts
     arg_parser = argparse.ArgumentParser()
 
-    # mwUrl would be required, except we already know Starbound's url
+    # mwUrl would be required, except we already know Starbound's url:  "https://starbounder.org"
     #arg_parser.add_argument("--mwUrl", help='MediaWiki base URL (any URL paths appending)')
     arg_parser.add_argument("--adminEmail", required=True, help="Email of the StarbounderOffliner operator. Will be put in the HTTP user-agent string for information only")
     arg_parser.add_argument("--pageList", help="List of pages to include.  Comma separated list of titles or a local path or HTTP(S) URL to a file with one title (in UTF8) per line")
@@ -79,8 +79,10 @@ def make_arg_parser() -> argparse.ArgumentParser:
     arg_parser.add_argument("--getCategories", action='store_true', help="Include the categories of all included pages.")
     arg_parser.add_argument("--categoriesPageSize", help="Number of items (subcategories, pages, files) to display per page on category pages (default: 200)")
     #arg_parser.add_argument("--keepEmptySections", help='Keep all sections, even empty ones typically used as placeholders in wikis to outline expected page structure.')
+    # we already know this for Starbounder:  "/mediawiki/api.php"
     #arg_parser.add_argument("--mwActionApiPath", help='MediaWiki API path (by default "/w/api.php")')
-    arg_parser.add_argument("--mwModulePath", help="MediaWiki module load path ($wgLoadScript), automatically chosen based on script path otherwise.")
+    # we already know this for Starbounder:  "/mediawiki/load.php"
+    #arg_parser.add_argument("--mwModulePath", help="MediaWiki module load path ($wgLoadScript), automatically chosen based on script path otherwise.")
     #arg_parser.add_argument("--mwDomain", help='MediaWiki user domain (for private wikis)')
     #arg_parser.add_argument("--mwUsername", help='MediaWiki username (for private wikis)')
     #arg_parser.add_argument("--mwPassword", help='MediaWiki user password (for private wikis)')

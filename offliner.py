@@ -41,6 +41,7 @@ def main(args: argparse.Namespace) -> None:
     # In mwoffliner, these are CLI parameters.
     mwUrl = "https://starbounder.org"
     mwActionApiPath = "/mediawiki/api.php"
+    mwModulePath = "/mediawiki/load.php"
 
     publisher = args.publisher or _PUBLISHER
 
@@ -88,7 +89,7 @@ def main(args: argparse.Namespace) -> None:
         mwMetaData = mediawiki.getMwMetaData(
                 addNamespaces,
                 onlyNamespaces,
-                args.mwModulePath,
+                mwModulePath,
                 args.forceSkin)
     except Exception as xc:
         _logger.error("FATAL - failed to get MediaWiki metadata")
