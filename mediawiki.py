@@ -240,7 +240,7 @@ class MediaWiki:
         if self._hasFlaggedRevs is None:
             reqOpts = [
                     ("action",          str(self.queryOpts.action)),
-                    ("qformat",         str(self.queryOpts.qformat)),
+                    ("format",          str(self.queryOpts.qformat)),
                     ("prop",            "info|flagged"),
                     ("rdlimit",         str(self.queryOpts.rdlimit)),
                     ("rdprop",          str(self.queryOpts.rdprop)),
@@ -481,6 +481,7 @@ class MediaWiki:
 
 class QueryOpts(NamedTuple):
     action: str
+    # NOTE:  mwoffliner uses "format" but Python has a built-in function by that name
     qformat: str
     prop: str
     rdlimit: str
