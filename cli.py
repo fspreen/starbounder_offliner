@@ -111,7 +111,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
     #arg_parser.add_argument("--customJs", help='Comma-separated list of JS URLs to inject into all rendered pages')
     # TODO update help string with version info
     arg_parser.add_argument("--userAgent", help='Custom User-Agent header for all HTTP requests. Defaults to "StarbounderOffliner (<adminEmail>)"')
-    #arg_parser.add_argument("--stableRevision", help='Prefer stable pages revisions when available, based on FlaggedRevs extension (which needs to be active on the wiki).')
+    arg_parser.add_argument("--stableRevision", action='store_true', help='Prefer stable pages revisions when available, based on FlaggedRevs extension (which needs to be active on the wiki).')
     #arg_parser.add_argument("--customFlavour", help='A custom processor that can filter and process articles (see extensions/*.js)')
     #arg_parser.add_argument("--mathJaxSource", help='UNSTABLE: Local path or HTTP(S) URL to a MathJax ZIP archive to extract and push to the ZIM. Enables math rendering on wikis using MathJax. Pages are detected automatically by their JS module list.')
     #arg_parser.add_argument("--mathJaxConfig", help='UNSTABLE: Local path or HTTP(S) URL to a MathJax configuration HTML <script>. Its content is injected inline in pages that need MathJax, before the MathJax library.')

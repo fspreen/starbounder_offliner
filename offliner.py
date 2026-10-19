@@ -27,6 +27,7 @@ import logging
 from typing import NamedTuple
 
 import downloader
+from exception import MediawikiFeatureException
 from mediawiki import MediaWiki
 from site_info import SiteInfoResponse
 
@@ -116,6 +117,11 @@ def main(args: argparse.Namespace) -> None:
     # TODO await mediawiki.hasCoordinates()
     mediawiki.hasActionParseApi()
     mediawiki.hasModuleApi()
+
+    # TODO await this call when it goes async
+    if args.stableRevision and not mediawiki.hasFlaggedRevs():
+        raise MediawikiFeatureException("--stableRevision was specified but this wiki does not "
+                        "support stable revisions (FlaggedRevs extension not found)")
 
     _logger.error("APPLICATION IS NOT COMPLETE")
 
