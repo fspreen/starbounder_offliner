@@ -21,7 +21,6 @@
 # StarbounderOffliner. If not, see <https://www.gnu.org/licenses/>.
 #####
 
-import enum
 import logging
 import re
 from typing import NamedTuple, Optional
@@ -36,6 +35,7 @@ from api_director import MAXLAG
 import constants
 from base_director import BaseURLDirector
 from downloader import Downloader
+from offliner_types import TextDirection, MWMetaData, MWNamespaceData
 from site_info import SiteInfoResponse, SiteInfoQueryResponse, SiteInfoSkin
 import util
 
@@ -339,7 +339,7 @@ class MediaWiki:
             raise ValueError("This wiki has no default skin: " + str(skins))
 
         if len(default_skins) > 1:
-            _logger.warn("Multiple default skins found, defaulting to the first one (%s)",
+            _logger.warning("Multiple default skins found, defaulting to the first one (%s)",
                          default_skins[0])
 
         return default_skins[0]
@@ -492,51 +492,6 @@ class QueryOpts(NamedTuple):
     redirects: Optional[bool]
     formatversion: str
     maxlag: str
-
-
-class MWNamespaceData(NamedTuple):
-    num: int
-    allowedSubpages: bool
-
-
-class MWMetaData(NamedTuple):
-    langIso2: str
-    langIso3: str
-    title: str
-    subTitle: str
-    creator: str
-    mainPage: str
-    #mainPageIsDomainRoot: bool      # missing from Starbounder
-    textDir: TextDirection
-    langMw: str
-    versionMw: str
-    logo: str
-    licenseName: str
-    licenseUrl: str
-    #categoryCollation: str          # missing from Starbounder
-
-    baseUrl: str
-    wikiPath: str
-    indexPhpPath: str
-    actionApiPath: str
-    domain: str
-    webUrl: str
-    actionApiUrl: str
-    webUrlPath: str
-    modulePath: str
-    modulePathOpt: str
-
-
-class TextDirection(enum.Enum):
-    LTR = 1
-    RTL = 2
-
-    def as_str(self) -> str:
-        if self == TextDirection.LTR:
-            return "ltr"
-        elif self == TextDirection.RTL:
-            return "rtl"
-        return self.name
 
 
 class _BasicSiteInfo(NamedTuple):
