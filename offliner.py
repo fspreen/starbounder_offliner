@@ -123,6 +123,20 @@ def main(args: argparse.Namespace) -> None:
         raise MediawikiFeatureException("--stableRevision was specified but this wiki does not "
                         "support stable revisions (FlaggedRevs extension not found)")
 
+    # TODO createRenderers
+
+    # TODO Redis connection
+
+    # TODO create output directory
+
+    # TODO temporary directory
+
+    # TODO set up process exit handler to remove temp directory
+    # TODO set up process SIGTERM and SIGINT handlers to close Redis
+
+    # Just year and month, apparently
+    filenameDate = dt.date.today().isoformat()[0:7]
+
     _logger.error("APPLICATION IS NOT COMPLETE")
 
 
